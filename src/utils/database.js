@@ -167,3 +167,28 @@ return antiLinkGroups.includes(groupId);
 };
 
 module.exports = exports;
+
+exports.activateAntiFloodGroup = (groupId) => {
+  const filename = "anti-flood-groups";
+  const antiFloodGroups = readJSON(filename);
+  if (!antiFloodGroups.includes(groupId)) {
+    antiFloodGroups.push(groupId);
+  }
+  writeJSON(filename, antiFloodGroups);
+};
+
+exports.deactivateAntiFloodGroup = (groupId) => {
+  const filename = "anti-flood-groups";
+  const antiFloodGroups = readJSON(filename);
+  const index = antiFloodGroups.indexOf(groupId);
+  if (index !== -1) {
+    antiFloodGroups.splice(index, 1);
+  }
+  writeJSON(filename, antiFloodGroups);
+};
+
+exports.isActiveAntiFloodGroup = (groupId) => {
+  const filename = "anti-flood-groups";
+  const antiFloodGroups = readJSON(filename);
+  return antiFloodGroups.includes(groupId);
+};
