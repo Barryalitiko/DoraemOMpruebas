@@ -2,7 +2,7 @@ const { dynamicCommand } = require("../utils/dynamicCommand");
 const { loadCommonFunctions } = require("../utils/loadCommonFunctions");
 const { handleAntiLongText } = require("../middlewares/antiLongText");
 const { addDeletedMessage } = require("../utils/database");
-const { antifloodMiddleware } = require("../middlewares/antiflood");
+const { antifloodMiddleware } = require("../antiflood");
 
 exports.onMessagesUpsert = async ({ socket, messages }) => {
   if (!messages.length) {
