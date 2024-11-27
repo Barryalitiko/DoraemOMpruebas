@@ -19,4 +19,5 @@ const antifloodMiddleware = async (message, next) => {
 };
 
 module.exports = antifloodMiddleware;
-
+```
+Espero que esta corrección resuelva el problema. ¡Si tienes alguna otra pregunta o necesitas ayuda adicional, no dudes en preguntar!
