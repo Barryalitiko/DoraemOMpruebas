@@ -1,21 +1,20 @@
-const { isActiveAntiFloodGroup } = require('../utils/database');
+const mensajesRecientes = {};
 
-const antifloodMiddleware = async (message, next) => {
-  const groupId = message.chat.remoteJid;
-  const isAntiFloodEnabled = await isActiveAntiFloodGroup(groupId);
-
-  if (isAntiFloodEnabled) {
-    const floodThreshold = 5; // ajusta este valor según tus necesidades
-    const recentMessages = await message.chat.getRecentMessages(10);
-    const isFlood = recentMessages.filter((msg) => msg.from === message.from).length >= floodThreshold;
-
-    if (isFlood) {
-      await message.delete();
-      return;
-    }
+const getMensajesRecientes = async (groupId, userId) => {
+  const key = `${groupId}-${userId}`;
+  if (!mensajesRecientes[key]) {
+    mensajesRecientes[key] = [];
   }
-
-  next();
+  return mensajesRecientes[key];
 };
 
-module.exports = antifloodMiddleware;
+const addMensajeReciente = async (groupId, userId, mensaje) => {
+  const key = `${groupId}-${userId}`;
+  const mensajes = await getMensajesRecientes(groupId, userId);
+  mensajes.push({ mensaje, timestamp: new Date().getTime() });
+  mensajesRecientes[key] = mensajes;
+  // Eliminar mensajes antiguos
+  const tiempoEspera = 60000; // 1 minuto
+  const ahora = new Date().getTime();
+  mensajesRecientes[key] = mensajesRecientes[key].filter((mensaje) => ahora - mensaje.timestamp < tiempoEspera);
+};
