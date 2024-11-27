@@ -38,14 +38,6 @@ exports.addDeletedMessage = (groupId, userId, messageText) => {
   writeJSON(filename, deletedMessages);
 };
 
-// Limitar el almacenamiento a los últimos 100 mensajes
-if (deletedMessages.length > 100) {
-deletedMessages.shift();
-}
-
-writeJSON(filename, deletedMessages);
-};
-
 // Función para obtener los últimos 6 mensajes borrados
 exports.getLastDeletedMessages = (groupId) => {
 const filename = DELETED_MESSAGES_FILE;
