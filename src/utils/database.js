@@ -7,6 +7,7 @@ const INACTIVE_GROUPS_FILE = "inactive-groups";
 const NOT_WELCOME_GROUPS_FILE = "not-welcome-groups";
 const INACTIVE_AUTO_RESPONDER_GROUPS_FILE = "inactive-auto-responder-groups";
 const ANTI_LINK_GROUPS_FILE = "anti-link-groups";
+const DELETED_MESSAGES_FILE = "deleted-messages";
 
 function createIfNotExists(fullPath) {
   if (!fs.existsSync(fullPath)) {
@@ -29,6 +30,40 @@ function writeJSON(jsonFile, data) {
 
   fs.writeFileSync(fullPath, JSON.stringify(data));
 }
+
+// Función para añadir un mensaje borrado
+exports.addDeletedMessage = (groupId, userId, messageText) => {
+  const filename = DELETED_MESSAGES_FILE;
+
+  const deletedMessages = readJSON(filename);
+
+  deletedMessages.push({
+    groupId,
+    userId,
+    messageText,
+    timestamp: new Date().toISOString(),
+  });
+
+  // Limitar el almacenamiento a los últimos 100 mensajes
+  if (deletedMessages.length > 100) {
+    deletedMessages.shift();
+  }
+
+  writeJSON(filename, deletedMessages);
+};
+
+// Función para obtener los últimos 6 mensajes borrados
+exports.getLastDeletedMessages = (groupId) => {
+  const filename = DELETED_MESSAGES_FILE;
+
+  const deletedMessages = readJSON(filename);
+
+  // Filtrar mensajes por grupo y devolver los últimos 6
+  return deletedMessages
+    .filter((message) => message.groupId === groupId)
+    .slice(-6)
+    .reverse();
+};
 
 exports.activateGroup = (groupId) => {
   const filename = INACTIVE_GROUPS_FILE;
@@ -190,42 +225,4 @@ exports.isActiveAntiLinkGroup = (groupId) => {
   const antiLinkGroups = readJSON(filename);
 
   return antiLinkGroups.includes(groupId);
-};
-
-const ANTI_LONG_TEXT_GROUPS_FILE = "anti-long-text-groups";
-
-exports.activateAntiLongTextGroup = (groupId) => {
-  const filename = ANTI_LONG_TEXT_GROUPS_FILE;
-
-  const antiLongTextGroups = readJSON(filename);
-
-  if (!antiLongTextGroups.includes(groupId)) {
-    antiLongTextGroups.push(groupId);
-  }
-
-  writeJSON(filename, antiLongTextGroups);
-};
-
-exports.deactivateAntiLongTextGroup = (groupId) => {
-  const filename = ANTI_LONG_TEXT_GROUPS_FILE;
-
-  const antiLongTextGroups = readJSON(filename);
-
-  const index = antiLongTextGroups.indexOf(groupId);
-
-  if (index === -1) {
-    return;
-  }
-
-  antiLongTextGroups.splice(index, 1);
-
-  writeJSON(filename, antiLongTextGroups);
-};
-
-exports.isActiveAntiLongTextGroup = (groupId) => {
-  const filename = ANTI_LONG_TEXT_GROUPS_FILE;
-
-  const antiLongTextGroups = readJSON(filename);
-
-  return antiLongTextGroups.includes(groupId);
 };
