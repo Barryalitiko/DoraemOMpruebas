@@ -1,4 +1,4 @@
-const { getLastDeletedMessages } = require("../utils/database"); // Asegúrate de importar la función
+const { getLastDeletedMessages } = require("../../utils/database"); // Asegúrate de importar la función
 
 // Definir el comando
 exports.lastdeleted = {
