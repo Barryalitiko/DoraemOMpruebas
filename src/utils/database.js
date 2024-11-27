@@ -28,17 +28,14 @@ fs.writeFileSync(fullPath, JSON.stringify(data));
 }
 
 // Función para añadir un mensaje borrado
-exports.addDeletedMessage = (groupId, userId, messageText) => {
-const filename = DELETED_MESSAGES_FILE;
-const fullPath = path.resolve(databasePath, `${filename}.json`);
-createIfNotExists(fullPath);
-const deletedMessages = readJSON(filename);
-deletedMessages.push({
-groupId,
-userId,
-messageText,
-timestamp: new Date().toISOString(),
-});
+exports.getLastDeletedMessages = (groupId) => {
+  const filename = DELETED_MESSAGES_FILE;
+  const deletedMessages = readJSON(filename);
+  return deletedMessages
+    .filter((message) => message.groupId === groupId)
+    .slice(-6) // obtener los últimos 6 mensajes
+    .reverse();
+};
 
 // Limitar el almacenamiento a los últimos 100 mensajes
 if (deletedMessages.length > 100) {
