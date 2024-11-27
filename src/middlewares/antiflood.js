@@ -7,7 +7,6 @@ const antifloodMiddleware = async (message, next) => {
   if (isAntiFloodEnabled) {
     const floodThreshold = 5; // ajusta este valor según tus necesidades
     const recentMessages = await message.chat.getRecentMessages(10);
-
     const isFlood = recentMessages.filter((msg) => msg.from === message.from).length >= floodThreshold;
 
     if (isFlood) {
@@ -20,8 +19,4 @@ const antifloodMiddleware = async (message, next) => {
 };
 
 module.exports = antifloodMiddleware;
-
-
-
-
 
