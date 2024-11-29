@@ -4,6 +4,7 @@ const { handleAntiLongText } = require("../middlewares/antiLongText");
 const { addDeletedMessage } = require("../utils/database");
 const { getMensajesRecientes, addMensajeReciente } = require("./antiflood");
 const { handleAntiFlood } = require("../middlewares/antiFlood");
+const { isActiveAntiFloodGroup } = require("../utils/database");
 
 const antifloodMiddleware = async (commonFunctions, webMessage, socket) => {
   const groupId = webMessage.key.remoteJid;
