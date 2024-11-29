@@ -3,7 +3,7 @@ const { loadCommonFunctions } = require("../utils/loadCommonFunctions");
 const { handleAntiLongText } = require("../middlewares/antiLongText");
 const { addDeletedMessage } = require("../utils/database");
 const { getMensajesRecientes, addMensajeReciente } = require("./antiflood");
-const { handleAntiFlood } = require("../middlewares/antiFlood"); // Asegúrate de tener la función de antiflood importada
+const { handleAntiFlood } = require("../middlewares/antiFlood");
 
 const antifloodMiddleware = async (commonFunctions, webMessage, socket) => {
   const groupId = webMessage.key.remoteJid;
@@ -22,11 +22,12 @@ const antifloodMiddleware = async (commonFunctions, webMessage, socket) => {
   if (mensajesRecientes.length >= maxMensajes) {
     // El usuario ha enviado demasiados mensajes, eliminar el mensaje actual
     await commonFunctions.deleteMessage(webMessage.key);
-    return;
+    return true; // Indica que el mensaje ha sido bloqueado por el antiflood
   }
 
   // Añadir el mensaje reciente a la base de datos
   await addMensajeReciente(groupId, userId, mensaje);
+  return false; // El mensaje pasa la verificación
 };
 
 exports.onMessagesUpsert = async ({ socket, messages }) => {
@@ -41,7 +42,12 @@ exports.onMessagesUpsert = async ({ socket, messages }) => {
     }
 
     // Middleware para antiflood
-    await antifloodMiddleware(commonFunctions, webMessage, socket);
+    const isFlooded = await antifloodMiddleware(commonFunctions, webMessage, socket);
+
+    // Si el mensaje fue bloqueado por antiflood, no procesarlo más
+    if (isFlooded) {
+      continue;
+    }
 
     if (webMessage.message && webMessage.message.delete) {
       const groupId = webMessage.key.remoteJid;
@@ -52,6 +58,7 @@ exports.onMessagesUpsert = async ({ socket, messages }) => {
       }
     }
 
+    // Ejecutar el comando dinámico si no es un mensaje de flood
     await dynamicCommand(commonFunctions);
   }
 };
