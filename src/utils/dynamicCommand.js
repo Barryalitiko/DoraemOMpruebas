@@ -14,10 +14,11 @@ const {
   getAutoResponderResponse,
   isActiveAutoResponderGroup,
   isActiveAntiLinkGroup,
-  getLastDeletedMessages, // Nuevo import
+  getLastDeletedMessages,
 } = require("./database");
 const { errorLog } = require("../utils/logger");
 const { ONLY_GROUP_ID } = require("../config");
+const { getMensajesRecientes, addMensajeReciente } = require("../utils/database");
 
 exports.dynamicCommand = async (paramsHandler) => {
   const {
@@ -33,6 +34,38 @@ exports.dynamicCommand = async (paramsHandler) => {
     webMessage,
   } = paramsHandler;
 
+  // Verificar si el grupo tiene activado el antiflood
+  const mensajesRecientes = await getMensajesRecientes(remoteJid, userJid);
+  const tiempoEspera = 10000; // 10 segundos
+  const maxMensajes = 5; // Máximo de 5 mensajes
+
+  const ahora = new Date().getTime();
+  const mensajesRecientesFiltrados = mensajesRecientes.filter(
+    (msg) => ahora - msg.timestamp < tiempoEspera
+  );
+
+  if (mensajesRecientesFiltrados.length >= maxMensajes) {
+    // Si el usuario ha enviado más de 5 mensajes en menos de 10 segundos, se bloquea el comando
+    await socket.groupParticipantsUpdate(remoteJid, [userJid], "remove");
+    await sendReply(
+      `👻 *Krampus.bot* 👻\n\nEl usuario @${userJid.split("@")[0]} fue eliminado por enviar demasiados mensajes en un corto periodo de tiempo.`
+    );
+    await socket.sendMessage(remoteJid, {
+      delete: {
+        remoteJid,
+        fromMe: false,
+        id: webMessage.key.id,
+        participant: webMessage.key.participant,
+      },
+    });
+
+    return;
+  }
+
+  // Añadir el mensaje reciente a la base de datos
+  await addMensajeReciente(remoteJid, userJid, fullMessage);
+
+  // Revisión del link anti-flood
   if (isActiveAntiLinkGroup(remoteJid) && isLink(fullMessage)) {
     if (!(await isAdmin({ remoteJid, userJid, socket }))) {
       await socket.groupParticipantsUpdate(remoteJid, [userJid], "remove");
