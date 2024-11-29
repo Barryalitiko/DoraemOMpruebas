@@ -1,5 +1,5 @@
 const { getMensajesRecientes, isActiveAntiFloodGroup } = require("../utils/database");
-const { isAdmin } = require("../utils/functions");  // Asegúrate de tener esta función que verifica si el usuario es admin
+const { isAdmin } = require("../utils/loadCommonFunctions");  // Asegúrate de tener esta función que verifica si el usuario es admin
 
 exports.handleAntiFlood = async ({ client, webMessage, sendReact, sendReply, socket }) => {
   const remoteJid = webMessage.key.remoteJid;
