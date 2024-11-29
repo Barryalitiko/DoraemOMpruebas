@@ -1,12 +1,19 @@
-const { getMensajesRecientes } = require("../utils/database");
+const { getMensajesRecientes, isActiveAntiFloodGroup } = require("../utils/database");
+const { isAdmin } = require("../utils/functions");  // Asegúrate de tener esta función que verifica si el usuario es admin
 
-exports.handleAntiFlood = async ({ client, webMessage, sendReact, sendReply }) => {
+exports.handleAntiFlood = async ({ client, webMessage, sendReact, sendReply, socket }) => {
   const remoteJid = webMessage.key.remoteJid;
   const userId = webMessage.key.participant || webMessage.key.remoteJid;
 
   // Verificar si el grupo tiene activado el antiflood
   if (!isActiveAntiFloodGroup(remoteJid)) {
     return;
+  }
+
+  // Verificar si el usuario es admin
+  const isUserAdmin = await isAdmin({ remoteJid, userJid: userId, socket });
+  if (isUserAdmin) {
+    return; // No hacer nada si es admin
   }
 
   // Obtener los mensajes recientes del usuario
