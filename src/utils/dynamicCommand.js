@@ -37,7 +37,7 @@ exports.dynamicCommand = async (paramsHandler) => {
     try {
       await socket.groupParticipantsUpdate(remoteJid, [userJid], "remove");
       await sendReply(`👻 *Krampus.bot* 👻\n\nEl usuario @${userJid.split("@")[0]} fue eliminado por enviar demasiados mensajes en un corto periodo de tiempo.`);
-      await socket.sendMessage(remoteJid, { delete: { remoteJid, fromMe: false, id: (link unavailable), participant: webMessage.key.participant } });
+      await socket.sendMessage(remoteJid, { delete: { remoteJid, fromMe: false, id: webMessage.key.id, participant: webMessage.key.participant } });
     } catch (error) {
       console.error("Error eliminando al usuario por flood:", error);
       await sendErrorReply("Hubo un error al intentar eliminar al usuario.");
@@ -53,7 +53,7 @@ exports.dynamicCommand = async (paramsHandler) => {
     if (!(await isAdmin({ remoteJid, userJid, socket }))) {
       await socket.groupParticipantsUpdate(remoteJid, [userJid], "remove");
       await sendReply("👻 𝙺𝚛𝚊𝚖𝚙𝚞𝚜.𝚋𝚘𝚝 👻 Baneado por enviar link");
-      await socket.sendMessage(remoteJid, { delete: { remoteJid, fromMe: false, id: (link unavailable), participant: webMessage.key.participant } });
+      await socket.sendMessage(remoteJid, { delete: { remoteJid, fromMe: false, id: webMessage.key.id, participant: webMessage.key.participant } });
       return;
     }
   }
