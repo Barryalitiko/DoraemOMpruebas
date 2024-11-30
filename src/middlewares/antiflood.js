@@ -1,5 +1,5 @@
 const { getMensajesRecientes, isActiveAntiFloodGroup } = require("../utils/database");
-const { isAdmin } = require("../utils/loadCommonFunctions");  // Asegúrate de tener esta función que verifica si el usuario es admin
+const { isAdmin } = require("../utils/loadCommonFunctions");
 
 exports.handleAntiFlood = async ({ client, webMessage, sendReact, sendReply, socket }) => {
   const remoteJid = webMessage.key.remoteJid;
@@ -10,7 +10,7 @@ exports.handleAntiFlood = async ({ client, webMessage, sendReact, sendReply, soc
     return;
   }
 
-  // Verificar si el usuario es admin
+  // Verificar si el usuario es administrador
   const isUserAdmin = await isAdmin({ remoteJid, userJid: userId, socket });
   if (isUserAdmin) {
     return; // No hacer nada si es admin
@@ -23,20 +23,15 @@ exports.handleAntiFlood = async ({ client, webMessage, sendReact, sendReply, soc
   const tiempoEspera = 10000; // 10 segundos
   const maxMensajes = 5; // Máximo de 5 mensajes
   const ahora = new Date().getTime();
-  
-  const mensajesRecientesFiltrados = mensajesRecientes.filter(
-    (msg) => ahora - msg.timestamp < tiempoEspera
-  );
+  const mensajesRecientesFiltrados = mensajesRecientes.filter((msg) => ahora - msg.timestamp < tiempoEspera);
 
   if (mensajesRecientesFiltrados.length >= maxMensajes) {
     try {
       await client.groupParticipantsUpdate(remoteJid, [userId], "remove");
-
       await client.sendMessage(remoteJid, {
         text: `👻 *Krampus.bot* 👻\n\nEl usuario @${userId.split("@")[0]} fue eliminado por enviar demasiados mensajes en un corto periodo de tiempo.`,
         mentions: [userId],
       });
-
       await sendReact("❌");
     } catch (error) {
       console.error("Error eliminando al usuario por flood:", error);
@@ -44,3 +39,4 @@ exports.handleAntiFlood = async ({ client, webMessage, sendReact, sendReply, soc
     }
   }
 };
+
