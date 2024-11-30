@@ -1,11 +1,21 @@
-
 const { DangerError } = require("../errors/DangerError");
 const { InvalidParameterError } = require("../errors/InvalidParameterError");
 const { WarningError } = require("../errors/WarningError");
 const { findCommandImport } = require(".");
-const { verifyPrefix, hasTypeOrCommand } = require("../middlewares");
+const {
+  verifyPrefix,
+  hasTypeOrCommand,
+  isLink,
+  isAdmin,
+} = require("../middlewares");
 const { checkPermission } = require("../middlewares/checkPermission");
-const { isActiveGroup, getAutoResponderResponse, isActiveAutoResponderGroup, isActiveAntiLinkGroup, getLastDeletedMessages } = require("./database");
+const {
+  isActiveGroup,
+  getAutoResponderResponse,
+  isActiveAutoResponderGroup,
+  isActiveAntiLinkGroup,
+  getLastDeletedMessages, 
+} = require("./database");
 const { errorLog } = require("../utils/logger");
 const { ONLY_GROUP_ID } = require("../config");
 const { getMensajesRecientes, addMensajeReciente } = require("../utils/database");
