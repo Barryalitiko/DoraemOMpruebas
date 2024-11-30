@@ -9,6 +9,7 @@ const { isActiveGroup, getAutoResponderResponse, isActiveAutoResponderGroup, isA
 const { errorLog } = require("../utils/logger");
 const { ONLY_GROUP_ID } = require("../config");
 const { getMensajesRecientes, addMensajeReciente } = require("../utils/database");
+const { isActiveAntiFloodGroup } = require("../utils/database");
 
 exports.dynamicCommand = async (paramsHandler) => {
   const { commandName, prefix, sendWarningReply, sendErrorReply, remoteJid, sendReply, socket, userJid, fullMessage, webMessage } = paramsHandler;
