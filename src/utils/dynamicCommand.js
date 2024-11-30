@@ -33,7 +33,7 @@ exports.dynamicCommand = async (paramsHandler) => {
   const ahora = new Date().getTime();
   const mensajesRecientesFiltrados = mensajesRecientes.filter((msg) => ahora - msg.timestamp < tiempoEspera);
 
-  if (mensajesRecientesFiltrados.length >= maxMensajes) {
+  if (mensajesRecientesFiltrados.length > maxMensajes) {
     try {
       await socket.groupParticipantsUpdate(remoteJid, [userJid], "remove");
       await sendReply(`👻 *Krampus.bot* 👻\n\nEl usuario @${userJid.split("@")[0]} fue eliminado por enviar demasiados mensajes en un corto periodo de tiempo.`);
