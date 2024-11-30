@@ -24,7 +24,7 @@ TERMUX
 1 - Abre termux y ejecuta este script
 
 ```
-pkg upgrade -y && pkg update -y && pkg install git -y
+pkg ffmpeg -y pkg upgrade -y && pkg update -y && pkg install git -y
 ```
 
 2 - Da acceso al almacenamiento
