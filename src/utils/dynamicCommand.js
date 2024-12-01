@@ -35,10 +35,6 @@ exports.dynamicCommand = async (paramsHandler) => {
     webMessage,
   } = paramsHandler;
 
-  if (!isActiveAntiFloodGroup(remoteJid)) {
-    return;
-  }
-
   const isUserAdmin = await isAdmin({ remoteJid, userJid, socket });
   if (isUserAdmin) {
     return; // No hacer nada si es admin
