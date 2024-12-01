@@ -39,7 +39,7 @@ exports.addDeletedMessage = (groupId, userId, messageText) => {
 };
 
 // Función para obtener los últimos 6 mensajes borrados
-exports.getLastDeletedMessages = (groupId) => {
+exports.getMensajesRecientes = (groupId) => {
 const filename = DELETED_MESSAGES_FILE;
 const deletedMessages = readJSON(filename);
 
