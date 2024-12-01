@@ -13,11 +13,6 @@ const { isActiveAntiFloodGroup } = require("../utils/database");
 exports.dynamicCommand = async (paramsHandler) => {
   const { commandName, prefix, sendWarningReply, sendErrorReply, remoteJid, sendReply, socket, userJid, fullMessage, webMessage } = paramsHandler;
 
-  // Verificar si el grupo tiene activado el antiflood
-  if (!isActiveAntiFloodGroup(remoteJid)) {
-    return;
-  }
-
   // Verificar si el usuario es administrador
   const isUserAdmin = await isAdmin({ remoteJid, userJid, socket });
   if (isUserAdmin) {
