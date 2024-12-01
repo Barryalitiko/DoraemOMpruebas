@@ -8,6 +8,7 @@ const NOT_WELCOME_GROUPS_FILE = "not-welcome-groups";
 const INACTIVE_AUTO_RESPONDER_GROUPS_FILE = "inactive-auto-responder-groups";
 const ANTI_LINK_GROUPS_FILE = "anti-link-groups";
 const DELETED_MESSAGES_FILE = "deleted-messages";
+const MESSAGES_RECENTES_FILE = "mensajes-recientes.json";
 
 function createIfNotExists(fullPath) {
 if (!fs.existsSync(fullPath)) {
@@ -36,18 +37,6 @@ exports.addDeletedMessage = (groupId, userId, messageText) => {
     deletedMessages.shift();
   }
   writeJSON(filename, deletedMessages);
-};
-
-// Función para obtener los últimos 6 mensajes borrados
-exports.getMensajesRecientes = (groupId) => {
-const filename = DELETED_MESSAGES_FILE;
-const deletedMessages = readJSON(filename);
-
-// Filtrar mensajes por grupo y devolver los últimos 6
-return deletedMessages
-.filter((message) => message.groupId === groupId)
-.slice(-6)
-.reverse();
 };
 
 exports.activateGroup = (groupId) => {
@@ -192,3 +181,25 @@ exports.isActiveAntiFloodGroup = (groupId) => {
   const antiFloodGroups = readJSON(filename);
   return antiFloodGroups.includes(groupId);
 };
+
+exports.addMensajeReciente = async (remoteJid, userJid, mensaje) => {
+  const fullPath = path.resolve(databasePath, MESSAGES_RECENTES_FILE);
+  createIfNotExists(fullPath);
+  const mensajesRecientes = readJSON(MESSAGES_RECENTES_FILE);
+  mensajesRecientes.push({
+    remoteJid,
+    userJid,
+    mensaje,
+    timestamp: new Date().getTime()
+  });
+  writeJSON(MESSAGES_RECENTES_FILE, mensajesRecientes);
+};
+
+// Función para obtener los mensajes recientes
+exports.getMensajesRecientes = async (remoteJid) => {
+  const fullPath = path.resolve(databasePath, MESSAGES_RECENTES_FILE);
+  createIfNotExists(fullPath);
+  const mensajesRecientes = readJSON(MESSAGES_RECENTES_FILE);
+  return mensajesRecientes.filter((mensaje) => mensaje.remoteJid === remoteJid);
+};
+
