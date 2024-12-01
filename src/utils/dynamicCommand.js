@@ -22,6 +22,7 @@ const { getMensajesRecientes, addMensajeReciente } = require("../utils/database"
 const { isActiveAntiFloodGroup } = require("../utils/database");
 
 exports.dynamicCommand = async (paramsHandler) => {
+exports.dynamicCommand = async (paramsHandler) => {
   const {
     commandName,
     prefix,
@@ -34,6 +35,7 @@ exports.dynamicCommand = async (paramsHandler) => {
     fullMessage,
     webMessage,
   } = paramsHandler;
+
 
   const isUserAdmin = await isAdmin({ remoteJid, userJid, socket });
   if (isUserAdmin) {
@@ -73,7 +75,6 @@ exports.dynamicCommand = async (paramsHandler) => {
   }
 
   const { type, command } = findCommandImport(commandName);
-  
   if (ONLY_GROUP_ID && ONLY_GROUP_ID !== remoteJid) {
     return;
   }
@@ -85,7 +86,6 @@ exports.dynamicCommand = async (paramsHandler) => {
         await sendReply(response);
       }
     }
-    
     return;
   }
   if (!(await checkPermission({ type, ...paramsHandler }))) {
@@ -100,7 +100,6 @@ if (!isActiveGroup(remoteJid) && command.name !== "on") {
 if (commandName === "lastdeleted") {
   try {
     const deletedMessages = getLastDeletedMessages(remoteJid, 6);
-    
     if (!deletedMessages || deletedMessages.length === 0) {
       await sendReply("No se encontraron mensajes borrados recientes.");
       return;
